@@ -1,0 +1,20 @@
+{
+    "project_name":       "bootloader",
+    "project_path":       "/root/.platformio/packages/framework-espidf/components/bootloader/subproject",
+    "build_dir":          "/config/test/.pio/build/test/bootloader",
+    "config_file":        "/config/test/sdkconfig.test",
+    "config_defaults":    "",
+    "app_elf":            "bootloader.elf",
+    "app_bin":            "bootloader.bin",
+    "git_revision":       "4.3.0",
+    "target":             "esp32",
+    "phy_data_partition": "",
+    "monitor_baud" :      "115200",
+    "monitor_toolprefix": "xtensa-esp32-elf-",
+    "config_environment" : {
+        "COMPONENT_KCONFIGS" : "/root/.platformio/packages/framework-espidf/components/efuse/Kconfig;/root/.platformio/packages/framework-espidf/components/esp32/Kconfig;/root/.platformio/packages/framework-espidf/components/esp_common/Kconfig;/root/.platformio/packages/framework-espidf/components/esp_system/Kconfig;/root/.platformio/packages/framework-espidf/components/log/Kconfig;/root/.platformio/packages/framework-espidf/components/newlib/Kconfig;/root/.platformio/packages/framework-espidf/components/spi_flash/Kconfig",
+        "COMPONENT_KCONFIGS_PROJBUILD" : "/root/.platformio/packages/framework-espidf/components/bootloader/Kconfig.projbuild;/root/.platformio/packages/framework-espidf/components/esptool_py/Kconfig.projbuild;/root/.platformio/packages/framework-espidf/components/partition_table/Kconfig.projbuild"
+    },
+    "build_components" : [ "bootloader", "bootloader_support", "efuse", "esp32", "esp_common", "esp_hw_support", "esp_rom", "esp_system", "esptool_py", "hal", "log", "main", "micro-ecc", "newlib", "partition_table", "soc", "spi_flash", "xtensa", "" ],
+    "build_component_paths" : [ "/root/.platformio/packages/framework-espidf/components/bootloader", "/root/.platformio/packages/framework-espidf/components/bootloader_support", "/root/.platformio/packages/framework-espidf/components/efuse", "/root/.platformio/packages/framework-espidf/components/esp32", "/root/.platformio/packages/framework-espidf/components/esp_common", "/root/.platformio/packages/framework-espidf/components/esp_hw_support", "/root/.platformio/packages/framework-espidf/components/esp_rom", "/root/.platformio/packages/framework-espidf/components/esp_system", "/root/.platformio/packages/framework-espidf/components/esptool_py", "/root/.platformio/packages/framework-espidf/components/hal", "/root/.platformio/packages/framework-espidf/components/log", "/root/.platformio/packages/framework-espidf/components/bootloader/subproject/main", "/root/.platformio/packages/framework-espidf/components/bootloader/subproject/components/micro-ecc", "/root/.platformio/packages/framework-espidf/components/newlib", "/root/.platformio/packages/framework-espidf/components/partition_table", "/root/.platformio/packages/framework-espidf/components/soc", "/root/.platformio/packages/framework-espidf/components/spi_flash", "/root/.platformio/packages/framework-espidf/components/xtensa", "" ]
+}

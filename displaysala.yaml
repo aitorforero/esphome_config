@@ -1,0 +1,582 @@
+esphome:
+  name: displaysala
+  platform: ESP32
+  board: az-delivery-devkit-v4
+  on_boot:
+    then:
+      - display.page.show: pageInicializando
+
+# Enable logging
+logger:
+
+ota:
+  password: !secret displaysala_ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+spi:
+  clk_pin: 18
+  mosi_pin: 23
+  miso_pin: 19
+
+color:
+  - id: colorBlue
+    red: 23%
+    green: 61%
+    blue: 80%
+    
+font:
+  - file: "fonts/Cosas.ttf"
+    id: fontCosas
+    size: 70
+    glyphs: ["A", "B"]
+
+  # https://erikflowers.github.io/weather-icons/
+  - file: "fonts/weathericons-regular-webfont.ttf"
+    id: fontClima
+    size: 50
+    glyphs: [
+      # Daytime
+      "", # (f00d) wi-day-sunny 
+      "", # (f002) wi-day-cloudy 
+      # "", # (f000) wi-day-cloudy-gusts 
+      # "", # (f001) wi-day-cloudy-windy 
+      # "", # (f003) wi-day-fog 
+      # "", # (f004) wi-day-hail 
+      # "", # (f0b6) wi-day-haze 
+      "", # (f005) wi-day-lightning 
+      # "", # (f008) wi-day-rain 
+      # "", # (f006) wi-day-rain-mix 
+      # "", # (f007) wi-day-rain-wind 
+      "", # (f009) wi-day-showers 
+      # "", # (f0b2) wi-day-sleet 
+      # "", # (f068) wi-day-sleet-storm 
+      # "", # (f00a) wi-day-snow 
+      # "", # (f06b) wi-day-snow-thunderstorm 
+      # "", # (f065) wi-day-snow-wind 
+      # "", # (f00b) wi-day-sprinkle 
+      # "", # (f00e) wi-day-storm-showers 
+      # "", # (f00c) wi-day-sunny-overcast 
+      # "", # (f010) wi-day-thunderstorm 
+      # "", # (f085) wi-day-windy 
+      # "", # (f06e) wi-solar-eclipse 
+      # "", # (f072) wi-hot 
+      # "", # (f07d) wi-day-cloudy-high 
+      # "", # (f0c4) wi-day-light-wind 
+      # Nighttime
+      "", # (f02e) wi-night-clear 
+      "", # (f086) wi-night-alt-cloudy 
+      # "", # (f022) wi-night-alt-cloudy-gusts 
+      # "", # (f023) wi-night-alt-cloudy-windy 
+      # "", # (f024) wi-night-alt-hail 
+      "", # (f025) wi-night-alt-lightning 
+      # "", # (f028) wi-night-alt-rain 
+      # "", # (f026) wi-night-alt-rain-mix 
+      # "", # (f027) wi-night-alt-rain-wind 
+      "", # (f029) wi-night-alt-showers 
+      # "", # (f0b4) wi-night-alt-sleet 
+      # "", # (f06a) wi-night-alt-sleet-storm 
+      # "", # (f02a) wi-night-alt-snow 
+      # "", # (f06d) wi-night-alt-snow-thunderstorm 
+      # "", # (f067) wi-night-alt-snow-wind 
+      # "", # (f02b) wi-night-alt-sprinkle 
+      # "", # (f02c) wi-night-alt-storm-showers 
+      # "", # (f02d) wi-night-alt-thunderstorm 
+      # "", # (f031) wi-night-cloudy 
+      # "", # (f02f) wi-night-cloudy-gusts 
+      # "", # (f030) wi-night-cloudy-windy 
+      # "", # (f04a) wi-night-fog 
+      # "", # (f032) wi-night-hail 
+      # "", # (f033) wi-night-lightning 
+      # "", # (f083) wi-night-partly-cloudy 
+      # "", # (f036) wi-night-rain 
+      # "", # (f034) wi-night-rain-mix 
+      # "", # (f035) wi-night-rain-wind 
+      # "", # (f037) wi-night-showers        
+      # "", # (f0b3) wi-night-sleet 
+      # "", # (f069) wi-night-sleet-storm 
+      # "", # (f038) wi-night-snow 
+      # "", # (f06c) wi-night-snow-thunderstorm 
+      # "", # (f066) wi-night-snow-wind 
+      # "", # (f039) wi-night-sprinkle 
+      # "", # (f03a) wi-night-storm-showers 
+      # "", # (f03b) wi-night-thunderstorm 
+      # "", # (f070) wi-lunar-eclipse 
+      # "", # (f077) wi-stars 
+      "", # (f01d) wi-storm-showers 
+      # "", # (f07e) wi-night-alt-cloudy-high 
+      # "", # (f080) wi-night-cloudy-high 
+      # "", # (f081) wi-night-alt-partly-cloudy 
+      # Neutral
+      "", # (f041) wi-cloud 
+      "", # (f013) wi-cloudy 
+      # "", # (f011) wi-cloudy-gusts 
+      # "", # (f012) wi-cloudy-windy 
+      # "", # (f014) wi-fog 
+      # "", # (f015) wi-hail 
+      "", # (f019) wi-rain 
+      "", # (f017) wi-rain-mix A
+      "", # (f018) wi-rain-wind 
+      # "", # (f01a) wi-showers 
+      "", # (f0b5) wi-sleet 
+      "", # (f01b) wi-snow 
+      "", # (f01c) wi-sprinkle 
+      "", # (f01e) wi-thunderstorm 
+      # "", # (f064) wi-snow-wind 
+      # "", # (f074) wi-smog 
+      "", # (f062) wi-smoke 
+      "", # (f016) wi-lightning 
+      # "", # (f04e) wi-raindrops 
+      # "", # (f078) wi-raindrop 
+      "", # (f063) wi-dust 
+      # "", # (f076) wi-snowflake-cold 
+      # "", # (f021) wi-windy 
+      # "", # (f050) wi-strong-wind 
+      # "", # (f082) wi-sandstorm 
+      # "", # (f0c6) wi-earthquake 
+      # "", # (f0c7) wi-fire 
+      # "", # (f07c) wi-flood 
+      # "", # (f071) wi-meteor 
+      # "", # (f0c5) wi-tsunami 
+      # "", # (f0c8) wi-volcano 
+      # "", # (f073) wi-hurricane 
+      "", # (f056) wi-tornado 
+      # "", # (f0cc) wi-small-craft-advisory 
+      # "", # (f0cd) wi-gale-warning 
+      # "", # (f0ce) wi-storm-warning 
+      # "", # (f0cf) wi-hurricane-warning 
+      # "", # (f0b1) wi-wind-direction 
+      # Miscellaneous
+      # "", # (f075) wi-alien 
+      # "", # (f03c) wi-celsius 
+      # "", # (f045) wi-fahrenheit 
+      # "", # (f042) wi-degrees 
+      # "", # (f055) wi-thermometer 
+      # "", # (f053) wi-thermometer-exterior 
+      # "", # (f054) wi-thermometer-internal 
+      # "", # (f03d) wi-cloud-down 
+      # "", # (f040) wi-cloud-up 
+      # "", # (f03e) wi-cloud-refresh 
+      # "", # (f047) wi-horizon 
+      # "", # (f046) wi-horizon-alt 
+      # "", # (f051) wi-sunrise 
+      # "", # (f052) wi-sunset 
+      # "", # (f0c9) wi-moonrise 
+      # "", # (f0ca) wi-moonset 
+      # "", # (f04c) wi-refresh 
+      # "", # (f04b) wi-refresh-alt 
+      # "", # (f084) wi-umbrella 
+      # "", # (f079) wi-barometer 
+      # "", # (f07a) wi-humidity 
+      "", # (f07b) wi-na 
+      # "", # (f0cb) wi-train 
+      # Moon Phases
+      # "", # (f095) wi-moon-new 
+      # "", # (f096) wi-moon-waxing-crescent-1 
+      # "", # (f097) wi-moon-waxing-crescent-2 
+      # "", # (f098) wi-moon-waxing-crescent-3 
+      # "", # (f099) wi-moon-waxing-crescent-4 
+      # "", # (f09a) wi-moon-waxing-crescent-5 
+      # "", # (f09b) wi-moon-waxing-crescent-6 
+      # "", # (f09c) wi-moon-first-quarter 
+      # "", # (f09d) wi-moon-waxing-gibbous-1 
+      # "", # (f09e) wi-moon-waxing-gibbous-2 
+      # "", # (f09f) wi-moon-waxing-gibbous-3 
+      # "", # (f0a0) wi-moon-waxing-gibbous-4 
+      # "", # (f0a1) wi-moon-waxing-gibbous-5 
+      # "", # (f0a2) wi-moon-waxing-gibbous-6 
+      # "", # (f0a3) wi-moon-full 
+      # "", # (f0a4) wi-moon-waning-gibbous-1 
+      # "", # (f0a5) wi-moon-waning-gibbous-2 
+      # "", # (f0a6) wi-moon-waning-gibbous-3 
+      # "", # (f0a7) wi-moon-waning-gibbous-4 
+      # "", # (f0a8) wi-moon-waning-gibbous-5 
+      # "", # (f0a9) wi-moon-waning-gibbous-6 
+      # "", # (f0aa) wi-moon-third-quarter 
+      # "", # (f0ab) wi-moon-waning-crescent-1 
+      # "", # (f0ac) wi-moon-waning-crescent-2 
+      # "", # (f0ad) wi-moon-waning-crescent-3 
+      # "", # (f0ae) wi-moon-waning-crescent-4 
+      # "", # (f0af) wi-moon-waning-crescent-5 
+      # "", # (f0b0) wi-moon-waning-crescent-6 
+      # "", # (f0eb) wi-moon-alt-new 
+      # "", # (f0d0) wi-moon-alt-waxing-crescent-1 
+      # "", # (f0d1) wi-moon-alt-waxing-crescent-2 
+      # "", # (f0d2) wi-moon-alt-waxing-crescent-3 
+      # "", # (f0d3) wi-moon-alt-waxing-crescent-4 
+      # "", # (f0d4) wi-moon-alt-waxing-crescent-5 
+      # "", # (f0d5) wi-moon-alt-waxing-crescent-6 
+      # "", # (f0d6) wi-moon-alt-first-quarter 
+      # "", # (f0d7) wi-moon-alt-waxing-gibbous-1 
+      # "", # (f0d8) wi-moon-alt-waxing-gibbous-2 
+      # "", # (f0d9) wi-moon-alt-waxing-gibbous-3 
+      # "", # (f0da) wi-moon-alt-waxing-gibbous-4 
+      # "", # (f0db) wi-moon-alt-waxing-gibbous-5 
+      # "", # (f0dc) wi-moon-alt-waxing-gibbous-6 
+      # "", # (f0dd) wi-moon-alt-full 
+      # "", # (f0de) wi-moon-alt-waning-gibbous-1 
+      # "", # (f0df) wi-moon-alt-waning-gibbous-2 
+      # "", # (f0e0) wi-moon-alt-waning-gibbous-3 
+      # "", # (f0e1) wi-moon-alt-waning-gibbous-4 
+      # "", # (f0e2) wi-moon-alt-waning-gibbous-5 
+      # "", # (f0e3) wi-moon-alt-waning-gibbous-6 
+      # "", # (f0e4) wi-moon-alt-third-quarter 
+      # "", # (f0e5) wi-moon-alt-waning-crescent-1 
+      # "", # (f0e6) wi-moon-alt-waning-crescent-2 
+      # "", # (f0e7) wi-moon-alt-waning-crescent-3 
+      # "", # (f0e8) wi-moon-alt-waning-crescent-4 
+      # "", # (f0e9) wi-moon-alt-waning-crescent-5 
+      # "", # (f0ea) wi-moon-alt-waning-crescent-6 
+      # Time
+      # "", # (f08a) wi-time-1 
+      # "", # (f08b) wi-time-2 
+      # "", # (f08c) wi-time-3 
+      # "", # (f08d) wi-time-4 
+      # "", # (f08e) wi-time-5 
+      # "", # (f08f) wi-time-6 
+      # "", # (f090) wi-time-7 
+      # "", # (f091) wi-time-8 
+      # "", # (f092) wi-time-9 
+      # "", # (f093) wi-time-10 
+      # "", # (f094) wi-time-11 
+      # "", # (f089) wi-time-12 
+      # Directional Arrows
+      # "", # (f058) wi-direction-up 
+      # "", # (f057) wi-direction-up-right 
+      # "", # (f04d) wi-direction-right 
+      # "", # (f088) wi-direction-down-right 
+      # "", # (f044) wi-direction-down 
+      # "", # (f043) wi-direction-down-left 
+      # "", # (f048) wi-direction-left 
+      "" # (f087) wi-direction-up-left
+    ]
+
+
+  - file: "fonts/Orbitron-VariableFont_wght.ttf"
+    id: fontTemperaturaMedia
+    size: 30
+
+  - file: "fonts/Orbitron-VariableFont_wght.ttf"
+    id: fontTemperatura
+    size: 70
+    glyphs: ["-", "%", ".", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+  
+  - file: "fonts/Orbitron-VariableFont_wght.ttf"
+    id: fontTemperaturaPequena
+    size: 20
+    glyphs: ["-", "%", ".", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
+
+globals:
+  - id: globalCurrentTemperature
+    type: float
+
+  - id: globalCurrentHumidity
+    type: int
+
+  - id: globalTargetTemperature
+    type: float
+
+  - id: globalCaldera
+    type: bool
+
+  - id: globalModo
+    type: bool
+
+  - id: globalClimaCurrentTemperature
+    type: float
+
+  - id: globalClimaCurrentHumidity
+    type: int
+
+  - id: globalClimaConditionId
+    type: int
+
+mqtt:
+  broker: !secret mqtt_broker
+  client_id: displaysala
+  log_topic: casa/displaysala/log
+  birth_message:
+    topic: casa/displaysala/status
+    payload: 'ON'
+  will_message:
+    topic: casa/displaysala/status
+    payload: 'OFF'
+  on_json_message:
+    topic: casa/displaysala/state
+    then:
+      - display.page.show: pageDefault
+      - lambda: |-
+          if (x.containsKey("currentTemperature"))
+            id(globalCurrentTemperature) = atof(x["currentTemperature"]);
+          else
+            id(globalCurrentTemperature) = 0.0;
+            
+          if (x.containsKey("currentHumidity"))
+            id(globalCurrentHumidity) = atoi(x["currentHumidity"]);
+          else
+            id(globalCurrentHumidity) = 0;
+
+          if (x.containsKey("targetTemperature"))
+            id(globalTargetTemperature) = atof(x["targetTemperature"]);
+          else
+            id(globalTargetTemperature) = 0;
+
+          if (x.containsKey("caldera"))
+            id(globalCaldera) = x["caldera"];
+          else
+            id(globalCaldera) = false;
+
+          if (x.containsKey("modo"))
+            id(globalModo) = x["modo"];
+          else
+            id(globalModo) = false;
+
+          if (x.containsKey("climaCurrentTemperature"))
+            id(globalClimaCurrentTemperature) = atof(x["climaCurrentTemperature"]);
+          else
+            id(globalClimaCurrentTemperature) = 0.0;
+            
+          if (x.containsKey("climaCurrentHumidity"))
+            id(globalClimaCurrentHumidity) = atoi(x["climaCurrentHumidity"]);
+          else
+            id(globalClimaCurrentHumidity) = 0;
+
+          if (x.containsKey("climaConditionId"))
+            id(globalClimaConditionId) = atoi(x["climaConditionId"]);
+          else
+            id(globalClimaConditionId) = 0;
+
+
+display:
+  - platform: ili9341
+    model: TFT 2.4
+    cs_pin: 5
+    dc_pin: 26
+    led_pin: 33  ### see note below ###
+    reset_pin: 27
+    rotation: 270
+    pages:
+      - id: pageInicializando
+        lambda: |-
+          it.fill(Color::BLACK);
+          it.printf(160, 120, id(fontTemperaturaMedia), TextAlign::CENTER, "Inicializando...");
+
+      - id: pageDefault
+        lambda: |-
+          // Limpiar
+          it.fill(Color::BLACK);
+
+          // Temperatura Casa
+          int parteEntera = round(id(globalCurrentTemperature)*10);
+          int parteDecimal = abs(parteEntera % 10);
+          parteEntera /= 10;
+          
+
+          std::string parteEnteraStr;
+          std::string parteDecimalStr;
+
+          parteEnteraStr =  to_string(parteEntera) + ".";
+          parteDecimalStr = to_string(parteDecimal); 
+          
+
+          int parteEnteraStrWidth, parteEnteraStrXOffset, parteEnteraStrBaseline, parteEnteraStrHeight;
+          int parteDecimalStrWidth, parteDecimalStrXOffset, parteDecimalStrBaseline, parteDecimalStrHeight;
+          
+          id(fontTemperatura).measure(parteEnteraStr.c_str(), &parteEnteraStrWidth, &parteEnteraStrXOffset, &parteEnteraStrBaseline, &parteEnteraStrHeight);
+          id(fontTemperaturaMedia).measure(parteDecimalStr.c_str(), &parteDecimalStrWidth, &parteEnteraStrXOffset, &parteDecimalStrBaseline, &parteDecimalStrHeight);
+          
+          int parteEnteraStrPosX = 160 - (parteEnteraStrWidth + parteDecimalStrWidth) / 2;
+          int parteEnteraStrPosY = 20;
+          int parteDecimalStrPosX = parteEnteraStrPosX + parteEnteraStrWidth;
+          int parteDecimalStrPosY = parteEnteraStrPosY + (parteEnteraStrBaseline - parteDecimalStrBaseline);
+
+          it.print(parteEnteraStrPosX, parteEnteraStrPosY, id(fontTemperatura), parteEnteraStr.c_str());
+          it.print(parteDecimalStrPosX, parteDecimalStrPosY, id(fontTemperaturaMedia), parteDecimalStr.c_str());
+          // it.rectangle(parteEnteraStrPosX, parteEnteraStrPosY, parteEnteraStrWidth, parteEnteraStrHeight);
+          // it.rectangle(parteDecimalStrPosX, parteDecimalStrPosY, parteDecimalStrWidth, parteDecimalStrHeight);
+          
+          
+          it.printf(160, 90, id(fontTemperaturaMedia), TextAlign::TOP_CENTER, "%i%%", id(globalCurrentHumidity));
+
+          
+          // Temperatura Durango
+          parteEntera = round(id(globalClimaCurrentTemperature)*10);
+          parteDecimal = abs(parteEntera % 10);
+          parteEntera /= 10;
+          
+          parteEnteraStr =  to_string(parteEntera) + ".";
+          parteDecimalStr = to_string(parteDecimal); 
+          
+          id(fontTemperaturaMedia).measure(parteEnteraStr.c_str(), &parteEnteraStrWidth, &parteEnteraStrXOffset, &parteEnteraStrBaseline, &parteEnteraStrHeight);
+          id(fontTemperaturaPequena).measure(parteDecimalStr.c_str(), &parteDecimalStrWidth, &parteEnteraStrXOffset, &parteDecimalStrBaseline, &parteDecimalStrHeight);
+          
+          parteEnteraStrPosX = 40 - (parteEnteraStrWidth + parteDecimalStrWidth) / 2;
+          parteEnteraStrPosY = 90;
+          parteDecimalStrPosX = parteEnteraStrPosX + parteEnteraStrWidth;
+          parteDecimalStrPosY = parteEnteraStrPosY + (parteEnteraStrBaseline - parteDecimalStrBaseline);
+
+          it.print(parteEnteraStrPosX, parteEnteraStrPosY, id(fontTemperaturaMedia), parteEnteraStr.c_str());
+          it.print(parteDecimalStrPosX, parteDecimalStrPosY, id(fontTemperaturaPequena), parteDecimalStr.c_str());
+          // it.rectangle(parteEnteraStrPosX, parteEnteraStrPosY, parteEnteraStrWidth, parteEnteraStrHeight);
+          // it.rectangle(parteDecimalStrPosX, parteDecimalStrPosY, parteDecimalStrWidth, parteDecimalStrHeight);
+
+          it.printf(40, 125, id(fontTemperaturaPequena), TextAlign::TOP_CENTER, "%i%%", id(globalClimaCurrentHumidity));
+          
+          std::string icono = "";
+
+          switch(id(globalClimaConditionId)) { 
+            case 200: // thunderstorm with light rain
+            case 230: // thunderstorm with light drizzle
+            case 231: // thunderstorm with drizzle
+              icono = ""; // f01d
+              break;
+              
+            case 201: // thunderstorm with rain
+            case 202: // thunderstorm with heavy rain
+            case 232: // thunderstorm with heavy drizzle
+              icono = ""; // f01e
+              break;
+            
+            
+            case 210: // light thunderstorm
+            case 211: // thunderstorm
+            case 212: // heavy thunderstorm
+              icono = ""; // f016
+              break;
+
+            case 221: // ragged thunderstorm
+              if(true) {
+                icono = ""; // f005
+              } else {
+                icono = ""; // f025
+              }
+              break;
+            
+            case 300: // light intensity drizzle
+            case 301: // drizzle
+            case 302: // heavy intensity drizzle
+            case 310: // light intensity drizzle rain
+            case 311: // drizzle rain
+              icono = ""; // f01c
+              break;
+            
+            case 312: // heavy intensity drizzle rain
+            case 313: // shower rain and drizzle
+            case 314: // heavy shower rain and drizzle
+            case 321: // shower drizzle
+            case 500: // light rain
+            case 501: // moderate rain
+            case 502: // heavy intensity rain
+            case 503: // very heavy rain
+            case 504: // extreme rain
+            case 511: // freezing rain
+            case 520: // light intensity shower rain
+            case 521: // shower rain
+            case 522: // heavy intensity shower rain
+              icono = ""; // f019
+              break;
+            
+            
+            case 531: // ragged shower rain
+              if(true) {
+                icono = ""; // f009
+              } else {
+                icono = ""; // f029
+              }
+              break;
+
+            case 611: // Sleet
+            case 612: // Light shower sleet
+            case 613: // Shower sleet
+              icono = ""; // f0b5
+              break;
+
+            case 615: // Light rain and snow
+            case 616: // Rain and snow
+              icono = ""; // f017
+              break;
+
+
+            case 600: // light snow
+            case 601: // Snow
+            case 602: // Heavy snow
+            case 620: // Light shower snow
+            case 621: // Shower snow
+            case 622: // Heavy shower snow
+              icono = ""; // f01b
+              break;
+
+            case 701: // mist
+            case 721: // Haze
+            case 731: // sand/ dust whirls
+            case 741: // fog
+            case 751: // Sand
+            case 761: // dust
+            case 762: // volcanic ash
+              icono = ""; // f063
+              break;
+             
+            case 711: // Smoke
+              icono = ""; // f062
+              break;
+
+            case 771: // squalls
+              icono = ""; // f018
+              break;
+
+            case 781: // tornado
+              icono = ""; // f056
+              break;
+
+            case 800: // clear sky
+              if(true) {
+                icono = ""; // f00d
+              } else {
+                icono = ""; // f02e
+              }
+              break;
+              
+            case 801: // few clouds: 11-25%
+            case 802: // scattered clouds: 25-50%
+              if(true) {
+                icono = ""; // f002
+              } else {
+                icono = ""; // f086
+              }
+              break;
+
+            case 803: // broken clouds: 51-84%
+              icono = ""; // f041
+              break;
+
+            case 804: // overcast clouds: 85-100%
+              icono = ""; // f013
+              break;
+
+            
+            default:
+              icono = ""; // f07b
+              break;
+          };
+          
+          it.print(45, 60, id(fontClima), TextAlign::CENTER , icono.c_str());
+          
+          if(id(!globalModo)) {
+            // Calefaccion apagada
+            icono = " ";
+          } else if (id(globalCaldera)) {
+            // Caldera encendida
+            icono = "B";
+          } else {
+            // Caldera apagada
+            icono = "A";
+          }
+          
+          it.print(275, 160, id(fontCosas), TextAlign::CENTER , icono.c_str());
+          
+          // free(parteEnteraStr);
+          // free(parteDecimalStr);
+          // free(icono);
