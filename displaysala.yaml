@@ -4,7 +4,10 @@ esphome:
   board: az-delivery-devkit-v4
   on_boot:
     then:
-      - display.page.show: pageInicializando
+    - output.set_level:
+        id: gpio_33
+        level: 0%
+    - display.page.show: pageInicializando
 
 # Enable logging
 logger:
@@ -15,6 +18,8 @@ ota:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
+  use_address: displaysala.lan
+
 
 spi:
   clk_pin: 18
@@ -22,235 +27,62 @@ spi:
   miso_pin: 19
 
 color:
-  - id: colorBlue
-    red: 23%
-    green: 61%
-    blue: 80%
+  - id: colorOFF
+    red: 80%
+    green: 78%
+    blue: 100%
+  
+  - id: colorON
+    red: 100%
+    green: 100%
+    blue: 100%
+
+  - id: colorFondo
+    red: 25%
+    green: 20%
+    blue: 100%
+    
+  - id: colorFondoError
+    red: 100%
+    green: 20%
+    blue: 20%
+
     
 font:
   - file: "fonts/Cosas.ttf"
     id: fontCosas
     size: 70
-    glyphs: ["A", "B"]
+    glyphs: ["A", "B", "C", "D", "E"]
 
   # https://erikflowers.github.io/weather-icons/
   - file: "fonts/weathericons-regular-webfont.ttf"
     id: fontClima
     size: 50
     glyphs: [
-      # Daytime
       "", # (f00d) wi-day-sunny 
       "", # (f002) wi-day-cloudy 
-      # "", # (f000) wi-day-cloudy-gusts 
-      # "", # (f001) wi-day-cloudy-windy 
-      # "", # (f003) wi-day-fog 
-      # "", # (f004) wi-day-hail 
-      # "", # (f0b6) wi-day-haze 
       "", # (f005) wi-day-lightning 
-      # "", # (f008) wi-day-rain 
-      # "", # (f006) wi-day-rain-mix 
-      # "", # (f007) wi-day-rain-wind 
       "", # (f009) wi-day-showers 
-      # "", # (f0b2) wi-day-sleet 
-      # "", # (f068) wi-day-sleet-storm 
-      # "", # (f00a) wi-day-snow 
-      # "", # (f06b) wi-day-snow-thunderstorm 
-      # "", # (f065) wi-day-snow-wind 
-      # "", # (f00b) wi-day-sprinkle 
-      # "", # (f00e) wi-day-storm-showers 
-      # "", # (f00c) wi-day-sunny-overcast 
-      # "", # (f010) wi-day-thunderstorm 
-      # "", # (f085) wi-day-windy 
-      # "", # (f06e) wi-solar-eclipse 
-      # "", # (f072) wi-hot 
-      # "", # (f07d) wi-day-cloudy-high 
-      # "", # (f0c4) wi-day-light-wind 
-      # Nighttime
       "", # (f02e) wi-night-clear 
       "", # (f086) wi-night-alt-cloudy 
-      # "", # (f022) wi-night-alt-cloudy-gusts 
-      # "", # (f023) wi-night-alt-cloudy-windy 
-      # "", # (f024) wi-night-alt-hail 
       "", # (f025) wi-night-alt-lightning 
-      # "", # (f028) wi-night-alt-rain 
-      # "", # (f026) wi-night-alt-rain-mix 
-      # "", # (f027) wi-night-alt-rain-wind 
       "", # (f029) wi-night-alt-showers 
-      # "", # (f0b4) wi-night-alt-sleet 
-      # "", # (f06a) wi-night-alt-sleet-storm 
-      # "", # (f02a) wi-night-alt-snow 
-      # "", # (f06d) wi-night-alt-snow-thunderstorm 
-      # "", # (f067) wi-night-alt-snow-wind 
-      # "", # (f02b) wi-night-alt-sprinkle 
-      # "", # (f02c) wi-night-alt-storm-showers 
-      # "", # (f02d) wi-night-alt-thunderstorm 
-      # "", # (f031) wi-night-cloudy 
-      # "", # (f02f) wi-night-cloudy-gusts 
-      # "", # (f030) wi-night-cloudy-windy 
-      # "", # (f04a) wi-night-fog 
-      # "", # (f032) wi-night-hail 
-      # "", # (f033) wi-night-lightning 
-      # "", # (f083) wi-night-partly-cloudy 
-      # "", # (f036) wi-night-rain 
-      # "", # (f034) wi-night-rain-mix 
-      # "", # (f035) wi-night-rain-wind 
-      # "", # (f037) wi-night-showers        
-      # "", # (f0b3) wi-night-sleet 
-      # "", # (f069) wi-night-sleet-storm 
-      # "", # (f038) wi-night-snow 
-      # "", # (f06c) wi-night-snow-thunderstorm 
-      # "", # (f066) wi-night-snow-wind 
-      # "", # (f039) wi-night-sprinkle 
-      # "", # (f03a) wi-night-storm-showers 
-      # "", # (f03b) wi-night-thunderstorm 
-      # "", # (f070) wi-lunar-eclipse 
-      # "", # (f077) wi-stars 
       "", # (f01d) wi-storm-showers 
-      # "", # (f07e) wi-night-alt-cloudy-high 
-      # "", # (f080) wi-night-cloudy-high 
-      # "", # (f081) wi-night-alt-partly-cloudy 
-      # Neutral
       "", # (f041) wi-cloud 
       "", # (f013) wi-cloudy 
-      # "", # (f011) wi-cloudy-gusts 
-      # "", # (f012) wi-cloudy-windy 
-      # "", # (f014) wi-fog 
-      # "", # (f015) wi-hail 
       "", # (f019) wi-rain 
       "", # (f017) wi-rain-mix A
       "", # (f018) wi-rain-wind 
-      # "", # (f01a) wi-showers 
       "", # (f0b5) wi-sleet 
       "", # (f01b) wi-snow 
       "", # (f01c) wi-sprinkle 
       "", # (f01e) wi-thunderstorm 
-      # "", # (f064) wi-snow-wind 
-      # "", # (f074) wi-smog 
       "", # (f062) wi-smoke 
       "", # (f016) wi-lightning 
-      # "", # (f04e) wi-raindrops 
-      # "", # (f078) wi-raindrop 
       "", # (f063) wi-dust 
-      # "", # (f076) wi-snowflake-cold 
-      # "", # (f021) wi-windy 
-      # "", # (f050) wi-strong-wind 
-      # "", # (f082) wi-sandstorm 
-      # "", # (f0c6) wi-earthquake 
-      # "", # (f0c7) wi-fire 
-      # "", # (f07c) wi-flood 
-      # "", # (f071) wi-meteor 
-      # "", # (f0c5) wi-tsunami 
-      # "", # (f0c8) wi-volcano 
-      # "", # (f073) wi-hurricane 
       "", # (f056) wi-tornado 
-      # "", # (f0cc) wi-small-craft-advisory 
-      # "", # (f0cd) wi-gale-warning 
-      # "", # (f0ce) wi-storm-warning 
-      # "", # (f0cf) wi-hurricane-warning 
-      # "", # (f0b1) wi-wind-direction 
-      # Miscellaneous
-      # "", # (f075) wi-alien 
-      # "", # (f03c) wi-celsius 
-      # "", # (f045) wi-fahrenheit 
-      # "", # (f042) wi-degrees 
-      # "", # (f055) wi-thermometer 
-      # "", # (f053) wi-thermometer-exterior 
-      # "", # (f054) wi-thermometer-internal 
-      # "", # (f03d) wi-cloud-down 
-      # "", # (f040) wi-cloud-up 
-      # "", # (f03e) wi-cloud-refresh 
-      # "", # (f047) wi-horizon 
-      # "", # (f046) wi-horizon-alt 
-      # "", # (f051) wi-sunrise 
-      # "", # (f052) wi-sunset 
-      # "", # (f0c9) wi-moonrise 
-      # "", # (f0ca) wi-moonset 
-      # "", # (f04c) wi-refresh 
-      # "", # (f04b) wi-refresh-alt 
-      # "", # (f084) wi-umbrella 
-      # "", # (f079) wi-barometer 
-      # "", # (f07a) wi-humidity 
       "", # (f07b) wi-na 
-      # "", # (f0cb) wi-train 
-      # Moon Phases
-      # "", # (f095) wi-moon-new 
-      # "", # (f096) wi-moon-waxing-crescent-1 
-      # "", # (f097) wi-moon-waxing-crescent-2 
-      # "", # (f098) wi-moon-waxing-crescent-3 
-      # "", # (f099) wi-moon-waxing-crescent-4 
-      # "", # (f09a) wi-moon-waxing-crescent-5 
-      # "", # (f09b) wi-moon-waxing-crescent-6 
-      # "", # (f09c) wi-moon-first-quarter 
-      # "", # (f09d) wi-moon-waxing-gibbous-1 
-      # "", # (f09e) wi-moon-waxing-gibbous-2 
-      # "", # (f09f) wi-moon-waxing-gibbous-3 
-      # "", # (f0a0) wi-moon-waxing-gibbous-4 
-      # "", # (f0a1) wi-moon-waxing-gibbous-5 
-      # "", # (f0a2) wi-moon-waxing-gibbous-6 
-      # "", # (f0a3) wi-moon-full 
-      # "", # (f0a4) wi-moon-waning-gibbous-1 
-      # "", # (f0a5) wi-moon-waning-gibbous-2 
-      # "", # (f0a6) wi-moon-waning-gibbous-3 
-      # "", # (f0a7) wi-moon-waning-gibbous-4 
-      # "", # (f0a8) wi-moon-waning-gibbous-5 
-      # "", # (f0a9) wi-moon-waning-gibbous-6 
-      # "", # (f0aa) wi-moon-third-quarter 
-      # "", # (f0ab) wi-moon-waning-crescent-1 
-      # "", # (f0ac) wi-moon-waning-crescent-2 
-      # "", # (f0ad) wi-moon-waning-crescent-3 
-      # "", # (f0ae) wi-moon-waning-crescent-4 
-      # "", # (f0af) wi-moon-waning-crescent-5 
-      # "", # (f0b0) wi-moon-waning-crescent-6 
-      # "", # (f0eb) wi-moon-alt-new 
-      # "", # (f0d0) wi-moon-alt-waxing-crescent-1 
-      # "", # (f0d1) wi-moon-alt-waxing-crescent-2 
-      # "", # (f0d2) wi-moon-alt-waxing-crescent-3 
-      # "", # (f0d3) wi-moon-alt-waxing-crescent-4 
-      # "", # (f0d4) wi-moon-alt-waxing-crescent-5 
-      # "", # (f0d5) wi-moon-alt-waxing-crescent-6 
-      # "", # (f0d6) wi-moon-alt-first-quarter 
-      # "", # (f0d7) wi-moon-alt-waxing-gibbous-1 
-      # "", # (f0d8) wi-moon-alt-waxing-gibbous-2 
-      # "", # (f0d9) wi-moon-alt-waxing-gibbous-3 
-      # "", # (f0da) wi-moon-alt-waxing-gibbous-4 
-      # "", # (f0db) wi-moon-alt-waxing-gibbous-5 
-      # "", # (f0dc) wi-moon-alt-waxing-gibbous-6 
-      # "", # (f0dd) wi-moon-alt-full 
-      # "", # (f0de) wi-moon-alt-waning-gibbous-1 
-      # "", # (f0df) wi-moon-alt-waning-gibbous-2 
-      # "", # (f0e0) wi-moon-alt-waning-gibbous-3 
-      # "", # (f0e1) wi-moon-alt-waning-gibbous-4 
-      # "", # (f0e2) wi-moon-alt-waning-gibbous-5 
-      # "", # (f0e3) wi-moon-alt-waning-gibbous-6 
-      # "", # (f0e4) wi-moon-alt-third-quarter 
-      # "", # (f0e5) wi-moon-alt-waning-crescent-1 
-      # "", # (f0e6) wi-moon-alt-waning-crescent-2 
-      # "", # (f0e7) wi-moon-alt-waning-crescent-3 
-      # "", # (f0e8) wi-moon-alt-waning-crescent-4 
-      # "", # (f0e9) wi-moon-alt-waning-crescent-5 
-      # "", # (f0ea) wi-moon-alt-waning-crescent-6 
-      # Time
-      # "", # (f08a) wi-time-1 
-      # "", # (f08b) wi-time-2 
-      # "", # (f08c) wi-time-3 
-      # "", # (f08d) wi-time-4 
-      # "", # (f08e) wi-time-5 
-      # "", # (f08f) wi-time-6 
-      # "", # (f090) wi-time-7 
-      # "", # (f091) wi-time-8 
-      # "", # (f092) wi-time-9 
-      # "", # (f093) wi-time-10 
-      # "", # (f094) wi-time-11 
-      # "", # (f089) wi-time-12 
-      # Directional Arrows
-      # "", # (f058) wi-direction-up 
-      # "", # (f057) wi-direction-up-right 
-      # "", # (f04d) wi-direction-right 
-      # "", # (f088) wi-direction-down-right 
-      # "", # (f044) wi-direction-down 
-      # "", # (f043) wi-direction-down-left 
-      # "", # (f048) wi-direction-left 
-      "" # (f087) wi-direction-up-left
+      ""  # (f087) wi-direction-up-left
     ]
 
 
@@ -294,6 +126,21 @@ globals:
   - id: globalClimaConditionId
     type: int
 
+  - id: globaltouch_key1Estado
+    type: int
+
+  - id: globaltouch_key2Estado
+    type: int
+
+  - id: globaltouch_key3Estado
+    type: int
+    
+  - id: globalEscenaNinosAcostados
+    type: bool
+
+  - id: globalTermometrosKO
+    type: bool
+
 mqtt:
   broker: !secret mqtt_broker
   client_id: displaysala
@@ -310,17 +157,17 @@ mqtt:
       - display.page.show: pageDefault
       - lambda: |-
           if (x.containsKey("currentTemperature"))
-            id(globalCurrentTemperature) = atof(x["currentTemperature"]);
+            id(globalCurrentTemperature) = x["currentTemperature"];
           else
             id(globalCurrentTemperature) = 0.0;
             
           if (x.containsKey("currentHumidity"))
-            id(globalCurrentHumidity) = atoi(x["currentHumidity"]);
+            id(globalCurrentHumidity) = x["currentHumidity"];
           else
             id(globalCurrentHumidity) = 0;
 
           if (x.containsKey("targetTemperature"))
-            id(globalTargetTemperature) = atof(x["targetTemperature"]);
+            id(globalTargetTemperature) = x["targetTemperature"];
           else
             id(globalTargetTemperature) = 0;
 
@@ -335,20 +182,44 @@ mqtt:
             id(globalModo) = false;
 
           if (x.containsKey("climaCurrentTemperature"))
-            id(globalClimaCurrentTemperature) = atof(x["climaCurrentTemperature"]);
+            id(globalClimaCurrentTemperature) = x["climaCurrentTemperature"];
           else
             id(globalClimaCurrentTemperature) = 0.0;
             
           if (x.containsKey("climaCurrentHumidity"))
-            id(globalClimaCurrentHumidity) = atoi(x["climaCurrentHumidity"]);
+            id(globalClimaCurrentHumidity) = x["climaCurrentHumidity"];
           else
             id(globalClimaCurrentHumidity) = 0;
 
           if (x.containsKey("climaConditionId"))
-            id(globalClimaConditionId) = atoi(x["climaConditionId"]);
+            id(globalClimaConditionId) = x["climaConditionId"];
           else
             id(globalClimaConditionId) = 0;
 
+          if (x.containsKey("escenaNinosAcostados"))
+            id(globalEscenaNinosAcostados) = x["escenaNinosAcostados"];
+          else
+            id(globalEscenaNinosAcostados) = false;
+
+          if (x.containsKey("termometrosKO"))
+            id(globalTermometrosKO) = x["termometrosKO"];
+          else
+            id(globalTermometrosKO) = false;
+
+          
+          float brillo = 1.0;  
+          if (x.containsKey("brillo")) {
+            brillo =  100;
+          }
+
+
+          id(gpio_33).set_level(brillo);
+
+
+output:
+  - platform: ledc
+    pin: GPIO33
+    id: gpio_33
 
 display:
   - platform: ili9341
@@ -363,12 +234,19 @@ display:
         lambda: |-
           it.fill(Color::BLACK);
           it.printf(160, 120, id(fontTemperaturaMedia), TextAlign::CENTER, "Inicializando...");
+          // Lo enciendo ahora para que no se vea nada más al empezar
+          id(gpio_33).set_level(1);
 
       - id: pageDefault
         lambda: |-
           // Limpiar
-          it.fill(Color::BLACK);
 
+          if(id(globalTermometrosKO))  {
+            it.fill(id(colorFondoError));
+          } else {
+            it.fill(id(colorFondo));
+          }
+ 
           // Temperatura Casa
           int parteEntera = round(id(globalCurrentTemperature)*10);
           int parteDecimal = abs(parteEntera % 10);
@@ -414,7 +292,7 @@ display:
           id(fontTemperaturaPequena).measure(parteDecimalStr.c_str(), &parteDecimalStrWidth, &parteEnteraStrXOffset, &parteDecimalStrBaseline, &parteDecimalStrHeight);
           
           parteEnteraStrPosX = 40 - (parteEnteraStrWidth + parteDecimalStrWidth) / 2;
-          parteEnteraStrPosY = 90;
+          parteEnteraStrPosY = 70;
           parteDecimalStrPosX = parteEnteraStrPosX + parteEnteraStrWidth;
           parteDecimalStrPosY = parteEnteraStrPosY + (parteEnteraStrBaseline - parteDecimalStrBaseline);
 
@@ -423,7 +301,7 @@ display:
           // it.rectangle(parteEnteraStrPosX, parteEnteraStrPosY, parteEnteraStrWidth, parteEnteraStrHeight);
           // it.rectangle(parteDecimalStrPosX, parteDecimalStrPosY, parteDecimalStrWidth, parteDecimalStrHeight);
 
-          it.printf(40, 125, id(fontTemperaturaPequena), TextAlign::TOP_CENTER, "%i%%", id(globalClimaCurrentHumidity));
+          it.printf(40, 105, id(fontTemperaturaPequena), TextAlign::TOP_CENTER, "%i%%", id(globalClimaCurrentHumidity));
           
           std::string icono = "";
 
@@ -562,21 +440,154 @@ display:
               break;
           };
           
-          it.print(45, 60, id(fontClima), TextAlign::CENTER , icono.c_str());
+          it.print(45, 40, id(fontClima), TextAlign::CENTER , icono.c_str());
           
-          if(id(!globalModo)) {
+          if(!id(globalModo)) {
             // Calefaccion apagada
-            icono = " ";
-          } else if (id(globalCaldera)) {
-            // Caldera encendida
-            icono = "B";
+            icono = "C";
           } else {
-            // Caldera apagada
-            icono = "A";
+            // Calefaccion encendia
+            icono = "C";
+            
+            std::string iconoCaldera = "";
+
+          
+            if (id(globalCaldera)) {
+              // Caldera encendida
+              iconoCaldera = "B";
+            } else {
+              // Caldera apagada
+              iconoCaldera = "A";
+            }
+            
+            it.print(275, 40, id(fontCosas), TextAlign::CENTER , iconoCaldera.c_str());
+
+            // Temperatura Objetivo
+            parteEntera = round(id(globalTargetTemperature)*10);
+            parteDecimal = abs(parteEntera % 10);
+            parteEntera /= 10;
+            
+            parteEnteraStr =  to_string(parteEntera) + ".";
+            parteDecimalStr = to_string(parteDecimal); 
+            
+            id(fontTemperaturaMedia).measure(parteEnteraStr.c_str(), &parteEnteraStrWidth, &parteEnteraStrXOffset, &parteEnteraStrBaseline, &parteEnteraStrHeight);
+            id(fontTemperaturaPequena).measure(parteDecimalStr.c_str(), &parteDecimalStrWidth, &parteEnteraStrXOffset, &parteDecimalStrBaseline, &parteDecimalStrHeight);
+            
+            parteEnteraStrPosX = 280 - (parteEnteraStrWidth + parteDecimalStrWidth) / 2;
+            parteEnteraStrPosY = 70;
+            parteDecimalStrPosX = parteEnteraStrPosX + parteEnteraStrWidth;
+            parteDecimalStrPosY = parteEnteraStrPosY + (parteEnteraStrBaseline - parteDecimalStrBaseline);
+  
+            it.print(parteEnteraStrPosX, parteEnteraStrPosY, id(fontTemperaturaMedia), parteEnteraStr.c_str());
+            it.print(parteDecimalStrPosX, parteDecimalStrPosY, id(fontTemperaturaPequena), parteDecimalStr.c_str());
+            // it.rectangle(parteEnteraStrPosX, parteEnteraStrPosY, parteEnteraStrWidth, parteEnteraStrHeight);
+            // it.rectangle(parteDecimalStrPosX, parteDecimalStrPosY, parteDecimalStrWidth, parteDecimalStrHeight);
           }
           
-          it.print(275, 160, id(fontCosas), TextAlign::CENTER , icono.c_str());
+          /* if(id(globaltouch_key1Estado) && 2 == 2) 
+            it.filled_rectangle(20, 160, 80, 60);
+          else
+            it.rectangle(20, 160, 80, 60);
           
-          // free(parteEnteraStr);
-          // free(parteDecimalStr);
-          // free(icono);
+          if(id(touch_key2).state) 
+            it.filled_rectangle(120, 160, 80, 60);
+          else
+            it.rectangle(120, 160, 80, 60);
+
+          if(id(touch_key3).state) 
+            it.filled_rectangle(220, 160, 80, 60);
+          else
+            it.rectangle(220, 160, 80, 60); */
+
+
+
+          it.print(60, 190, id(fontCosas), id(globalEscenaNinosAcostados) ? id(colorON) : id(colorOFF), TextAlign::CENTER , "D");
+          it.print(160, 190, id(fontCosas), TextAlign::CENTER , "E");
+          it.print(260, 190, id(fontCosas), id(globalModo) ? id(colorON) : id(colorOFF), TextAlign::CENTER , icono.c_str());
+
+
+
+          
+
+
+touchscreen:
+  platform: xpt2046
+  id: MyTouchscreen
+  cs_pin: 32
+  interrupt_pin: 4
+  update_interval: 50ms
+  report_interval: never
+  threshold: 400
+  calibration_x_min: 3920
+  calibration_x_max: 465
+  calibration_y_min: 3740
+  calibration_y_max: 280
+  swap_x_y: false
+  on_touch:
+    - lambda: |-
+          ESP_LOGI("cal", "x=%d, y=%d, x_raw=%d, y_raw=%0d",
+              id(MyTouchscreen).x,
+              id(MyTouchscreen).y,
+              id(MyTouchscreen).x_raw,
+              id(MyTouchscreen).y_raw
+              );
+
+binary_sensor:
+  - platform: touchscreen
+    touchscreen_id: MyTouchscreen
+    id: touch_key1
+    x_min: 35
+    x_max: 105
+    y_min: 170
+    y_max: 240
+    on_press:
+      then:
+        - mqtt.publish:
+            topic:  casa/displaysala/touch1
+            payload: "ON"
+           
+    on_release:
+      then:
+        - mqtt.publish:
+            topic:  casa/displaysala/touch1
+            payload: "OFF"
+        
+  - platform: touchscreen
+    touchscreen_id: MyTouchscreen
+    id: touch_key2
+    x_min: 130
+    x_max: 210
+    y_min: 170
+    y_max: 240
+    on_press:
+      then:
+        - mqtt.publish:
+            topic:  casa/displaysala/touch2
+            payload: "ON"
+            
+    on_release:
+      then:
+        - mqtt.publish:
+            topic:  casa/displaysala/touch2
+            payload: "OFF"
+   
+  - platform: touchscreen
+    touchscreen_id: MyTouchscreen
+    id: touch_key3
+    x_min: 240
+    x_max: 310
+    y_min: 170
+    y_max: 240
+    on_press:
+      then:
+        - mqtt.publish:
+            topic:  casa/displaysala/touch3
+            payload: "ON"
+           
+    on_release:
+      then:
+        - mqtt.publish:
+            topic:  casa/displaysala/touch3
+            payload: "OFF"
+
+
