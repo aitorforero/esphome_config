@@ -12,8 +12,6 @@ esp32:
 # Enable logging
 logger:
 
-api:
-
 ota:
 
 
@@ -22,12 +20,7 @@ wifi:
   password: !secret wifi_password
   use_address: mando-estudio.lan
 
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "Esphome-Web-E01B44"
-    password: "UvdBKf2PLNQz"
 
-captive_portal:
 
 i2c:
   sda: GPIO21
