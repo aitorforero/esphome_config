@@ -1,0 +1,194 @@
+esphome:
+  name: mando-estudio
+  on_boot:
+    then:
+    - display.page.show: pageInicializando
+
+esp32:
+  board: az-delivery-devkit-v4
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+api:
+
+ota:
+
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  use_address: mando-estudio.lan
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Esphome-Web-E01B44"
+    password: "UvdBKf2PLNQz"
+
+captive_portal:
+
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+
+binary_sensor:
+  - platform: gpio
+    id: leftButton
+    pin:
+      number: GPIO33
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    filters:
+      - delayed_on_off: 10ms
+    on_press:
+      then: 
+        - lambda: |-
+            id(globalLeftPulsado) = true;
+            id(mqttClient).publish("casa/mandos/command/1E0000000006/" + id(globalState) + "/left", "down");
+            if(id(globalRightPulsado))
+            {
+              id(mqttClient).publish("casa/mandos/command/1E0000000006/" + id(globalState) + "/both", "click");
+            }
+
+    on_release:
+      then:
+       - lambda: |-
+            id(globalLeftPulsado) = false;
+            id(mqttClient).publish("casa/mandos/command/1E0000000006/" + id(globalState) + "/left", "up");
+            if(id(globalRightPulsado))
+            {
+              id(mqttClient).publish("casa/mandos/command/1E0000000006/" + id(globalState) + "/both", "click");
+              id(globalBothClickLanzado) = true;
+            }
+            else if(!id(globalBothClickLanzado))
+            {
+              id(mqttClient).publish("casa/mandos/command/1E0000000006/" + id(globalState) + "/left", "click");
+            }
+            else
+            {
+              id(globalBothClickLanzado) = false;
+            }
+ 
+  - platform: gpio
+    id: rightButton
+    pin:
+      number: GPIO19
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    filters:
+      - delayed_on_off: 10ms
+    on_press:
+      then: 
+      - lambda: |-
+            id(globalRightPulsado) = true;
+            id(mqttClient).publish("casa/mandos/command/1E0000000006/" + id(globalState) + "/right", "down");
+ 
+    on_release:
+      then:
+        - lambda: |-
+            id(globalRightPulsado) = false;
+            id(mqttClient).publish("casa/mandos/command/1E0000000006/" + id(globalState) + "/right", "up");
+
+            if(id(globalLeftPulsado))
+            {
+              id(mqttClient).publish("casa/mandos/command/1E0000000006/" + id(globalState) + "/both", "click");
+              id(globalBothClickLanzado) = true;
+            }
+            else if(!id(globalBothClickLanzado))
+            {
+              id(mqttClient).publish("casa/mandos/command/1E0000000006/" + id(globalState) + "/right", "click");
+            }
+            else
+            {
+              id(globalBothClickLanzado) = false;
+            }
+
+
+  
+
+
+globals:
+  - id: globalName
+    type: std::string
+
+  - id: globalState
+    type: std::string
+
+  - id: globalText
+    type: std::string
+
+  - id: globalLeftPulsado
+    type: bool
+    initial_value: 'false'
+
+  - id: globalRightPulsado
+    type: bool
+    initial_value: 'false'
+
+  - id: globalBothClickLanzado
+    type: bool
+    initial_value: 'false'
+mqtt:
+  id: mqttClient
+  broker: !secret mqtt_broker
+  client_id: mando-estudio
+  log_topic: casa/mando-estudio/log
+  birth_message:
+    topic: casa/mandos/initialize
+    payload: '1E0000000006'
+  will_message:
+    topic: casa/displaysala/status
+    payload: 'OFF'
+  on_json_message:
+    topic: casa/mandos/1E0000000006/setState
+    then:
+      - display.page.show: pageDefault
+      - lambda: |-
+          id(globalName) = x["name"] | "";
+          id(globalState) = x["state"] | "";
+          id(globalText) = x["text"] | "";
+      - component.update: pantalla
+
+color:
+  - id: colorNegro
+    red: 0%
+    green: 0%
+    blue: 0%
+  
+  - id: colorBlanco
+    red: 100%
+    green: 100%
+    blue: 100%
+
+font:
+  - file: "fonts/NotoSans-Bold.ttf"
+    id: fontName
+    size: 10
+
+  - file: "fonts/NotoSans-Bold.ttf"
+    id: fontText
+    size: 15
+
+display:
+  - id: pantalla
+    platform: ssd1306_i2c
+    model: "SH1106 128x64"
+    update_interval: 20s
+    address: 0x3C
+    contrast: 50%
+    pages:
+      - id: pageInicializando
+        lambda: |-
+          it.print(64, 32, id(fontText), id(colorBlanco), TextAlign::CENTER, "Inicializando...");  
+ 
+      - id: pageDefault
+        lambda: |-
+          it.print(0, 0, id(fontName), id(globalName).c_str());
+          it.print(64, 32, id(fontText), id(colorBlanco), TextAlign::CENTER, id(globalText).c_str());  
+ 
