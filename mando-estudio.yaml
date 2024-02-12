@@ -3,6 +3,9 @@ esphome:
   on_boot:
     then:
     - display.page.show: pageInicializando
+    - script.execute:
+        id: encenderPantalla
+
 
 esp32:
   board: az-delivery-devkit-v4
@@ -13,7 +16,11 @@ esp32:
 logger:
 
 ota:
-
+  on_begin:
+    then:
+    - display.page.show: pageActualizando
+    - script.execute:
+        id: encenderPantalla
 
 wifi:
   ssid: !secret wifi_ssid
@@ -42,14 +49,13 @@ binary_sensor:
         - lambda: |-
             id(globalLeftPulsado) = true;
             id(mqttClient).publish("casa/mandos/command/1E0000000006/" + id(globalState) + "/left", "down");
-            if(id(globalRightPulsado))
-            {
-              id(mqttClient).publish("casa/mandos/command/1E0000000006/" + id(globalState) + "/both", "click");
-            }
+        - script.execute:
+            id: encenderPantalla
+        
 
     on_release:
       then:
-       - lambda: |-
+        - lambda: |-
             id(globalLeftPulsado) = false;
             id(mqttClient).publish("casa/mandos/command/1E0000000006/" + id(globalState) + "/left", "up");
             if(id(globalRightPulsado))
@@ -65,7 +71,9 @@ binary_sensor:
             {
               id(globalBothClickLanzado) = false;
             }
- 
+        - script.execute:
+            id: encenderPantalla
+
   - platform: gpio
     id: rightButton
     pin:
@@ -78,9 +86,11 @@ binary_sensor:
       - delayed_on_off: 10ms
     on_press:
       then: 
-      - lambda: |-
+        - lambda: |-
             id(globalRightPulsado) = true;
             id(mqttClient).publish("casa/mandos/command/1E0000000006/" + id(globalState) + "/right", "down");
+        - script.execute:
+            id: encenderPantalla
  
     on_release:
       then:
@@ -101,9 +111,9 @@ binary_sensor:
             {
               id(globalBothClickLanzado) = false;
             }
-
-
-  
+        - script.execute:
+            id: encenderPantalla
+ 
 
 
 globals:
@@ -147,7 +157,21 @@ mqtt:
           id(globalState) = x["state"] | "";
           id(globalText) = x["text"] | "";
       - component.update: pantalla
-
+      - script.execute:
+          id: encenderPantalla
+ 
+script:
+  - id: encenderPantalla
+    mode: restart
+    then:
+      - lambda: |-
+          id(pantalla).turn_on();
+          id(pantalla).set_contrast(.50);
+      - delay: 5s
+      - lambda: id(pantalla).set_contrast(.10);
+      - delay: 60s
+      - lambda: id(pantalla).turn_off();
+      
 color:
   - id: colorNegro
     red: 0%
@@ -161,12 +185,17 @@ color:
 
 font:
   - file: "fonts/NotoSans-Bold.ttf"
-    id: fontName
+    id: font10
     size: 10
 
   - file: "fonts/NotoSans-Bold.ttf"
-    id: fontText
+    id: font15
     size: 15
+
+
+  - file: "fonts/NotoSans-Bold.ttf"
+    id: font20
+    size: 20
 
 display:
   - id: pantalla
@@ -174,14 +203,19 @@ display:
     model: "SH1106 128x64"
     update_interval: 20s
     address: 0x3C
-    contrast: 50%
+    contrast: 25%
     pages:
+      - id: pageActualizando
+        lambda: |-
+          it.print(64, 32, id(font15), id(colorBlanco), TextAlign::CENTER, "Actualizando...");  
+ 
       - id: pageInicializando
         lambda: |-
-          it.print(64, 32, id(fontText), id(colorBlanco), TextAlign::CENTER, "Inicializando...");  
- 
+          it.print(64, 32, id(font15), id(colorBlanco), TextAlign::CENTER, "Inicializando...");  
+
       - id: pageDefault
         lambda: |-
-          it.print(0, 0, id(fontName), id(globalName).c_str());
-          it.print(64, 32, id(fontText), id(colorBlanco), TextAlign::CENTER, id(globalText).c_str());  
+          it.filled_rectangle(0, 0, 128, 20);
+          it.print(2, 2, id(font10), id(colorNegro), TextAlign::RIGHT, id(globalName).c_str());
+          it.print(64, 37, id(font20), id(colorBlanco), TextAlign::CENTER, id(globalText).c_str());  
  
