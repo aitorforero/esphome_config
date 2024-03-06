@@ -1,0 +1,14 @@
+substitutions:
+  nombre: "cocina"
+  friendly_name: "Mando Cocina"
+  log_level: debug
+  stateTimerDelay: 30s
+
+ 
+packages:
+  base:  !include wallswitchtypes/WallSwitchBase.yaml
+  state_machine:  !include wallswitchtypes/TwoToggleTwoBlindStateMachine.yaml
+ 
+ 
+   
+  

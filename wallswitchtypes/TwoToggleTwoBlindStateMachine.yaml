@@ -1,0 +1,141 @@
+external_components:
+  - source:
+      type: git
+      url: https://github.com/aitorforero/esphome-state-machine   
+
+
+state_machine:
+  - name: TwoToggleTwoBlind
+    initial_state: Inicializando
+    states:
+      - name: Inicializando
+        on_set:
+          - script.execute:
+              id: encenderPantalla
+              text: Inicializando...
+          - light.turn_on:
+              id: Led
+              brightness: 100%
+              red: 0.78
+              green: 0.39
+              blue: 0
+              effect: Strobe
+        on_leave:
+          - light.turn_on:
+              id: Led
+              brightness: 50%
+              red: 0
+              green: 1
+              blue: 0
+      
+      - name: LucesIdle
+        on_enter:
+          - script.execute: stateTimer
+          - script.execute:
+              id: encenderPantalla
+              text: Luces
+
+      - name: LucesIzquierda
+        on_enter:
+          - script.execute:
+              id: encenderPantalla
+              text: Luces
+          - delay: 100ms
+          - state_machine.transition: Volver
+
+      - name: LucesDerecha
+        on_enter:
+          - script.execute:
+              id: encenderPantalla
+              text: Luces
+          - delay: 100ms
+          - state_machine.transition: Volver
+
+      - name: Persiana1Idle
+        on_enter:
+          - script.execute: stateTimer
+          - script.execute:
+              id: encenderPantalla
+              text: Puerta
+
+      - name: Persiana1Subir
+        on_enter:
+          - script.execute: stateTimer
+          - script.execute:
+              id: encenderPantalla
+              text: Subir
+          
+      - name: Persiana1Bajar
+        on_enter:
+          - script.execute: stateTimer
+          - script.execute:
+              id: encenderPantalla
+              text: Bajar
+
+      - name: Persiana2Idle
+        on_enter:
+          - script.execute: stateTimer
+          - script.execute:
+              id: encenderPantalla
+              text: Ventana
+
+      - name: Persiana2Subir
+        on_enter:
+          - script.execute: stateTimer
+          - script.execute:
+              id: encenderPantalla
+              text: Subir
+          
+      - name: Persiana2Bajar
+        on_enter:
+          - script.execute: stateTimer
+          - script.execute:
+              id: encenderPantalla
+              text: Bajar
+
+    inputs:
+      - name: Volver
+        transitions:
+          - LucesIzquierda -> LucesIdle
+          - LucesDerecha -> LucesIdle
+          - Persiana1Idle -> LucesIdle
+          - Persiana1Subir -> LucesIdle
+          - Persiana1Bajar -> LucesIdle
+          - Persiana2Idle -> LucesIdle
+          - Persiana2Subir -> LucesIdle
+          - Persiana2Bajar -> LucesIdle
+      - name: BothClick
+        transitions:
+          - LucesIdle -> Persiana1Idle
+          - Persiana1Idle -> Persiana2Idle
+          - Persiana1Subir -> Persiana2Idle
+          - Persiana1Bajar -> Persiana2Idle
+          - Persiana2Idle -> LucesIdle
+          - Persiana2Subir -> LucesIdle
+          - Persiana2Bajar -> LucesIdle
+      - name: LeftClick
+        transitions:
+          - LucesIdle -> LucesIzquierda
+          - Persiana1Idle -> Persiana1Bajar
+          - Persiana1Bajar -> Persiana1Idle
+          - Persiana1Subir -> Persiana1Bajar
+          - Persiana2Idle -> Persiana2Bajar
+          - Persiana2Bajar -> Persiana2Idle
+          - Persiana2Subir -> Persiana2Bajar
+      - name: RightClick
+        transitions:
+          - LucesIdle -> LucesDerecha
+          - Persiana1Idle -> Persiana1Subir
+          - Persiana1Subir -> Persiana1Idle
+          - Persiana1Bajar -> Persiana1Subir
+          - Persiana2Idle -> Persiana2Subir
+          - Persiana2Subir -> Persiana2Idle
+          - Persiana2Bajar -> Persiana2Subir
+      - name: Inicializado
+        transitions:
+          - Inicializando -> LucesIdle
+    diagram: mermaid  
+
+text_sensor:
+  - platform: state_machine
+    name: State

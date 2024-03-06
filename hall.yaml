@@ -1,0 +1,14 @@
+substitutions:
+  nombre: "hall"
+  friendly_name: "Mando Hall"
+  log_level: debug
+  stateTimerDelay: 30s
+
+ 
+packages:
+  base:  !include wallswitchtypes/WallSwitchBase.yaml
+  state_machine:  !include wallswitchtypes/TwoToggleOneBlindStateMachine.yaml
+ 
+ 
+   
+  

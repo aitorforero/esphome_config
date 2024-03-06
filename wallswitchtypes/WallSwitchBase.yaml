@@ -1,0 +1,233 @@
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+esphome:
+  name: wall_switch_${nombre}
+  friendly_name: ${friendly_name}
+
+globals:
+  - id: globalBothClickLanzado
+    type: bool
+    initial_value: 'false'
+
+  - id: globalText
+    type: std::string
+    initial_value: '""'
+
+
+
+debug:
+  update_interval: 5s
+
+
+# Logger must be at least debug (default)
+logger:
+  level: ${log_level}
+
+ota:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  use_address: wall_switch_${nombre}.lan
+
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+  frequency: 800kHz
+
+mqtt:
+  id: mqttClient
+  broker: !secret mqtt_broker
+  client_id: wall_switch_${nombre}
+  discovery: True
+  discovery_retain: True
+  topic_prefix: casa/wall_switch_${nombre}
+  log_topic: casa/wall_switch_${nombre}/log
+  on_connect: 
+    then:
+      - state_machine.transition: Inicializado
+ 
+script:
+  - id: encenderPantalla
+    mode: restart
+    parameters:
+      text: std::string
+    then:
+      - globals.set:
+          id: globalText
+          value: !lambda return text;
+      - component.update: pantalla
+      - lambda: |-
+          id(pantalla).turn_on();
+          id(pantalla).set_contrast(.50);
+      - delay: 5s
+      - lambda: id(pantalla).set_contrast(.10);
+      - delay: 60s
+      - lambda: id(pantalla).turn_off();
+
+  - id: stateTimer
+    mode: restart
+    then:
+      - delay: ${stateTimerDelay}
+      - state_machine.transition: Volver
+    
+      
+color:
+  - id: colorNegro
+    red: 0%
+    green: 0%
+    blue: 0%
+  
+  - id: colorBlanco
+    red: 100%
+    green: 100%
+    blue: 100%
+
+font:
+  - file: "fonts/NotoSans-Bold.ttf"
+    id: font10
+    size: 10
+
+  - file: "fonts/NotoSans-Bold.ttf"
+    id: font17
+    size: 17
+
+binary_sensor:
+  - platform: gpio
+    id: leftGpio
+    name: "Left Button" 
+    pin:
+      number: GPIO19
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    filters:
+      - delayed_on_off: 40ms
+    on_press:
+      then: 
+        - logger.log: 
+            level: debug
+            format: "leftGpio on_press"
+        
+
+    on_release:
+      then:
+        - logger.log: 
+            level: debug
+            format: "leftGpio on_release"
+        - if:
+            condition:
+              binary_sensor.is_on: rightGpio
+            then:
+              - state_machine.transition: BothClick 
+              - globals.set:
+                  id: globalBothClickLanzado
+                  value: "true"
+            else:
+              - if:
+                  condition:  
+                    lambda: "return !id(globalBothClickLanzado);"
+                  then:
+                    state_machine.transition: LeftClick 
+                  else:
+                    - globals.set:
+                        id: globalBothClickLanzado
+                        value: "false"
+
+
+
+  - platform: gpio
+    id: rightGpio
+    name: "Right Button" 
+    pin:
+      number: GPIO18
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    filters:
+      - delayed_on_off: 40ms
+    on_press:
+      then: 
+        - logger.log: 
+            level: debug
+            format: "rightGpio on_press"
+ 
+    on_release:
+      then:
+        - logger.log: 
+            level: debug
+            format: "rightGpio on_release"
+        - if:
+            condition:
+              binary_sensor.is_on: leftGpio
+            then:
+              - state_machine.transition: BothClick 
+              - globals.set:
+                  id: globalBothClickLanzado
+                  value: "true"
+            else:
+              - if:
+                  condition:  
+                    lambda: "return !id(globalBothClickLanzado);"
+                  then:
+                    state_machine.transition: RightClick 
+                  else:
+                    - globals.set:
+                        id: globalBothClickLanzado
+                        value: "false"
+
+text_sensor:
+  - platform: debug
+    device:
+      name: "Device Info"
+    reset_reason:
+      name: "Reset Reason"
+
+  - platform: version
+    name: "ESPHome Version"
+
+  - platform: wifi_info
+    ip_address:
+      name: ESP IP Address
+    ssid:
+      name: ESP Connected SSID
+    bssid:
+      name: ESP Connected BSSID
+    mac_address:
+      name: ESP Mac Wifi Address
+    scan_results:
+      name: ESP Latest Scan Results
+    dns_address:
+      name: ESP DNS Address
+
+
+
+light:
+  - id: Led
+    platform: fastled_clockless
+    chipset: SK6812
+    pin: GPIO27
+    num_leds: 1
+    rgb_order: GRB
+
+display:
+  - id: pantalla
+    platform: ssd1306_i2c
+    model: "SH1106 128x64"
+    address: 0x3C
+    contrast: 25%
+    pages:
+      - id: pageDefault
+        lambda: |-
+          it.filled_rectangle(0, 0, 128, 20);
+          it.print(2, 2, id(font10), id(colorNegro), TextAlign::LEFT, "${friendly_name}");
+          it.print(64, 37, id(font17), id(colorBlanco), TextAlign::CENTER, id(globalText).c_str());  
+ 
+
+    

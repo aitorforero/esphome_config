@@ -1,0 +1,5 @@
+substitutions:
+  nombre: "bano"
+  friendly_name: "Mando Baño"
+
+<<: !include wallswitchbase.yaml

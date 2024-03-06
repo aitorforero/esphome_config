@@ -1,0 +1,13 @@
+substitutions:
+  nombre: "mia"
+  friendly_name: "Mando Mia"
+  log_level: debug
+  stateTimerDelay: 30s
+
+ 
+packages:
+  base:  !include wallswitchtypes/WallSwitchBase.yaml
+  state_machine:  !include wallswitchtypes/TwoToggleTwoBlindStateMachine.yaml
+ 
+ 
+   

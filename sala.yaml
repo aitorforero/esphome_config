@@ -1,0 +1,14 @@
+substitutions:
+  nombre: "sala"
+  friendly_name: "Mando Sala"
+  log_level: debug  
+  stateTimerDelay: 30s  
+    
+ 
+  
+packages:
+  base:  !include wallswitchtypes/WallSwitchBase.yaml
+  state_machine:  !include wallswitchtypes/TwoToggleOneBlindStateMachine.yaml
+
+ 
+  
