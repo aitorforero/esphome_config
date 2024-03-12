@@ -1,0 +1,10 @@
+substitutions:
+  nombre: "estudio"
+  friendly_name: "Mando Estudio"
+  log_level: debug
+  stateTimerDelay: 30s
+
+ 
+packages:
+  base:  !include wallswitchtypes/WallSwitchBase.yaml
+  state_machine:  !include wallswitchtypes/TwoToggleOneBlindStateMachine.yaml

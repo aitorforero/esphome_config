@@ -1,0 +1,10 @@
+substitutions:
+  nombre: "irai"
+  friendly_name: "Mando Irai"
+  log_level: debug
+  stateTimerDelay: 30s
+
+ 
+packages:
+  base:  !include wallswitchtypes/WallSwitchBase.yaml
+  state_machine:  !include wallswitchtypes/TwoToggleOneBlindStateMachine.yaml
