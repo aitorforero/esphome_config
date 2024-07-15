@@ -3,8 +3,11 @@ substitutions:
   friendly_name: "Mando Estudio"
   log_level: debug
   stateTimerDelay: 30s
+  left_pin_number: GPIO19
+  right_pin_number: GPIO33
 
  
 packages:
   base:  !include wallswitchtypes/WallSwitchBase.yaml
   state_machine:  !include wallswitchtypes/TwoToggleOneBlindStateMachine.yaml
+

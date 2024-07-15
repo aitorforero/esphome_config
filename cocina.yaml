@@ -3,6 +3,8 @@ substitutions:
   friendly_name: "Mando Cocina"
   log_level: debug
   stateTimerDelay: 30s
+  left_pin_number: GPIO19
+  right_pin_number: GPIO18
 
  
 packages:

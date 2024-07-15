@@ -101,7 +101,7 @@ binary_sensor:
     id: leftGpio
     name: "Left Button" 
     pin:
-      number: GPIO19
+      number: ${left_pin_number}
       mode:
         input: true
         pullup: true
@@ -145,7 +145,7 @@ binary_sensor:
     id: rightGpio
     name: "Right Button" 
     pin:
-      number: GPIO18
+      number: ${right_pin_number}
       mode:
         input: true
         pullup: true
