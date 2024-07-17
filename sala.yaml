@@ -3,7 +3,9 @@ substitutions:
   friendly_name: "Mando Sala"
   log_level: debug  
   stateTimerDelay: 30s  
-    
+  left_pin_number: GPIO32
+  right_pin_number: GPIO33
+  
  
   
 packages:
